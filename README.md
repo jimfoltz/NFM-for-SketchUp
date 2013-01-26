@@ -20,9 +20,11 @@ Download this [Sample SketchUp Model](http://sketchup.google.com/3dwarehouse/det
 
 Things to note:
 
+* The car code is generated strictly from Faces - other SketchUp entities such as Groups and Components may be in the model, but are ignored.
 * The car is centered (more or less) on the origin.
 * The size of the car is appropriate for the default wheels.
-* Pay special attention to the names of the Materials - they control things like default colors, headlights, brakelights, glow, and flash. Use the following special names in as SketchUp Material names:
+* The stats and physics of the car are included for covenience. There is no way to edit these from SketchUp.
+* Pay special attention to the names of the Materials - they control things like default colors, headlights, brakelights, glow, and flash. Use the following special names as SketchUp Material names:
  * 1stColor
  * 2ndColor
  * glass
@@ -31,12 +33,12 @@ Things to note:
  * lightF
  * lightB
 
-Multiple special names can be used.
+Multiple special names can be used for any material, separated by a space.
 
 ## Exporting Car Codes ##
 
-* Select *Show Code* from SketchUp's *Plugins/Need for Madness/Show Code*
+* Select *Show Code* from SketchUp's **Plugins > Need for Madness > Show Code**
 menu item.
 * Copy and paste the code into the NFM Car Maker code editor.
-
+* Press Save & Preview
 
