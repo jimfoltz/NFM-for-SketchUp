@@ -25,6 +25,7 @@ Things to note:
 * Pay special attention to the names of the Materials - they control things like default colors, headlights, brakelights, glow, and flash. Use the following special names in as SketchUp Material names:
  * 1stColor
  * 2ndColor
+ * glass
  * flash
  * glow
  * lightF
