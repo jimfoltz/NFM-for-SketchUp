@@ -11,9 +11,8 @@ This SketchUp plugin is meant to help creating vehicles.
 
 
 * Step 1 -
-    Download the [nfm-exporter.rb](http://dl.dropbox.com/u/2657771/nfm-exporter.rb) file.
-* Step 2 -
-    Move or copy the `nfm-exporter.rb` file to your SketchUp/Plugins folder.
+    Download the [nfm-exporter.rb](https://raw.github.com/jimfoltz/NFM-for-SketchUp/master/nfm-exporter.rb) file.
+* Step 3 - Move or copy the `nfm-exporter.rb` file to your SketchUp/Plugins folder.
 
     For SketchUp 8 on Windows, plugins are located here:
 
