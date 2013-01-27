@@ -24,10 +24,21 @@ require 'sketchup'
 module JF
   module NFM
     @release = '2013a'
+    @model = Sketchup.active_model
 
     def self.export
-      model = Sketchup.active_model
+      model    = Sketchup.active_model
       entities = model.active_entities
+      faces    = entities.grep(Sketchup::Face)
+      # Group Faces by Material
+      face_mat = {}
+      faces.each do |face|
+        if mat = face.material
+          matname = face.material.display_name
+          face_mat[matname] ||= []
+          face_mat[matname] << face
+        end
+      end
       out = "// NFM Exporter for SketchUp release #{@release}\n"
       out << "// Created on: #{Time.now}\n"
       out << "// Model Title: #{model.title}\n"
@@ -54,47 +65,50 @@ module JF
       if faces.size > 210
         UI.messagebox("Model has #{faces.size} faces.")
       end
-      entities.grep(Sketchup::Face).each do |face|
-        o_loop = face.outer_loop
-        verts = o_loop.vertices
-        out << '<p>' << "\n"
-        if mat = face.material
-          out << "// material: #{mat.display_name}\n"
-          matname = mat.display_name
-          out << 'c('
-          out << mat.color.red.to_s << ','
-          out << mat.color.green.to_s << ','
-          out << mat.color.blue.to_s
-          out << ')'
+      #entities.grep(Sketchup::Face).each do |face|
+      face_mat.each do |part, faces|
+        faces.each do |face|
+          o_loop = face.outer_loop
+          verts = o_loop.vertices
+          out << '<p>' << "\n"
+          if mat = face.material
+            out << "// #{mat.display_name}\n"
+            matname = mat.display_name
+            out << 'c('
+            out << mat.color.red.to_s << ','
+            out << mat.color.green.to_s << ','
+            out << mat.color.blue.to_s
+            out << ')'
+            out << "\n"
+            if matname[/glass/i]
+              out << "glass()\n"
+            end
+            if matname[/lightf/i]
+              out << "lightF\n"
+            end
+            if matname[/lightb/i]
+              out << "lightB\n"
+            end
+            if matname[/flash/i]
+              #out << "// flash\n"
+              out << "gr(-18) // flash\n"
+            end
+            if matname[/glow/i]
+              #out << "// glow\n"
+              out << "gr(-10) //glow\n"
+            end
+          end
           out << "\n"
-          if matname[/glass/i]
-            out << "glass()\n"
+          verts.each do |vert|
+            pos = vert.position
+            pos.transform!(tr)
+            pos = pos.to_a.map{|e| e.round}
+            out << '  p(' << pos.join(',') << ')' 
+            out << "\n"
           end
-          if matname[/lightf/i]
-            out << "lightF\n"
-          end
-          if matname[/lightb/i]
-            out << "lightB\n"
-          end
-          if matname[/flash/i]
-            out << "// flash\n"
-            out << "gr(-18)\n"
-          end
-          if matname[/glow/i]
-            out << "// glow\n"
-            out << "gr(-10)\n"
-          end
+          out << '</p>'
+          out << "\n\n"
         end
-        out << "\n"
-        verts.each do |vert|
-          pos = vert.position
-          pos.transform!(tr)
-          pos = pos.to_a.map{|e| e.round}
-          out << 'p(' << pos.join(',') << ')' 
-          out << "\n"
-        end
-        out << '</p>'
-        out << "\n\n"
       end
 
       # Output default wheels, stats and physics
