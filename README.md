@@ -1,18 +1,19 @@
 NFM-for-SketchUp
 ================
 
-[Need for Madness](http://www.needformadness.com/developer/) is a funny, physics-based car game written in Java. You can create and customize vehicles for the game.
+[Need for Madness](http://www.needformadness.com/developer/) is a fun, fast-paced car game written in Java. You can create and customize vehicles for the game.
 
 This SketchUp plugin is meant to help creating vehicles.
 
 
-
 ## Plugin Installation ##
 
+The NFM plugins is a single-file. In a nutshell, you just put the file in SketchUps' Plugins folder.
 
 * Step 1 -
-    Download the [nfm-exporter.rb](https://raw.github.com/jimfoltz/NFM-for-SketchUp/master/nfm-exporter.rb) file.
-* Step 3 - Move or copy the `nfm-exporter.rb` file to your SketchUp/Plugins folder.
+    Download the [nfm-exporter.rb](https://raw.github.com/jimfoltz/NFM-for-SketchUp/master/nfm-exporter.rb) file. (Right-click link, select the *Save  As* option.)
+
+* Step 2 - Move or copy the `nfm-exporter.rb` file to your SketchUp/Plugins folder.
 
     For SketchUp 8 on Windows, plugins are located here:
 
@@ -23,7 +24,7 @@ This SketchUp plugin is meant to help creating vehicles.
         `/Library/Application Support/Google SketchUp 8/SketchUp/Plugins/`
 
 * Step 3 -
-    Restart SketchUp.
+    Restart SketchUp. The plugn will be in the **Plugins > Need for Maddness** menu.
 
 ## Creating a Model ##
 
