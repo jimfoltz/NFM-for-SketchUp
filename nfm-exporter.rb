@@ -50,6 +50,10 @@ module JF
       end
       out << "\n"
 
+      faces = entities.grep(Sketchup::Face)
+      if faces.size > 210
+        UI.messagebox("Model has #{faces.size} faces.")
+      end
       entities.grep(Sketchup::Face).each do |face|
         o_loop = face.outer_loop
         verts = o_loop.vertices
