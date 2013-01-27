@@ -191,9 +191,48 @@ module JF
       Sketchup.active_model.active_view.zoom_extents
     end
 
+    def self.surface_outer_edges(surface)
+      visible_edges = []
+      surface.each do |face|
+        face.edges.each do |edge|
+          if not edge.soft?
+            visible_edges << edge
+          end
+        end
+      end
+      visible_edges
+    end
+
+    def self.surface_from_face(face)
+      surface = adjacent_faces(face)
+    end
+
+    def self.surface_test
+      model = Sketchup.active_model
+      face = model.selection[0]
+      surface = surface_from_face(face)
+      model.selection.clear
+      outer_edges = surface_outer_edges(surface)
+      model.selection.add(outer_edges)
+    end
+
+    def self.adjacent_faces(face, faces_found = [])
+      faces_found << face if faces_found.empty?
+      edges = face.edges
+      edges.each do |edge|
+        if edge.soft?
+          faces_to_add = edge.faces - faces_found
+          faces_found.concat(faces_to_add)
+          faces_to_add.each{|f| adjacent_faces(f, faces_found)}
+        end
+      end
+      faces_found
+    end
+
     menu = UI.menu('Plugins').add_submenu('Need For Madness')
     menu.add_item('Show Code') { NFM.export }
     #menu.add_item('NFM Import') { NFM.import } 
+    menu.add_item('NFM Surface Test') { NFM.surface_test } 
 
   end # module NFM
 end # module JF
