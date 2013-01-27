@@ -24,7 +24,7 @@ The NFM plugins is a single-file. In a nutshell, you just put the file in Sketch
         `/Library/Application Support/Google SketchUp 8/SketchUp/Plugins/`
 
 * Step 3 -
-    Restart SketchUp. The plugn will be in the **Plugins > Need for Maddness** menu.
+    Restart SketchUp. The plugin will be in the **Plugins > Need for Maddness** menu.
 
 ## Creating a Model ##
 
