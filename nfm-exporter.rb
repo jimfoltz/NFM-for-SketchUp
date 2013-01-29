@@ -26,137 +26,127 @@ module JF
     @release = '2013a'
     @model = Sketchup.active_model
 
-    #def self.export
-    #  model    = Sketchup.active_model
-    #  entities = model.active_entities
-    #  faces    = entities.grep(Sketchup::Face)
-    #  # Group Faces by Material
-    #  face_mat = {}
-    #  faces.each do |face|
-    #    if mat = face.material
-    #      matname = face.material.display_name
-    #      face_mat[matname] ||= []
-    #      face_mat[matname] << face
-    #    end
-    #  end
-    #  out = "// NFM Exporter for SketchUp release #{@release}\n"
-    #  out << "// Created on: #{Time.now}\n"
-    #  out << "// Model Title: #{model.title}\n"
-    #  out << "// Model Path: #{model.path}\n\n"
+    def self.export_old
+      model    = Sketchup.active_model
+      entities = model.active_entities
+      faces    = entities.grep(Sketchup::Face)
+      # Group Faces by Material
+      face_mat = {}
+      faces.each do |face|
+        if mat = face.material
+          matname = face.material.display_name
+          face_mat[matname] ||= []
+          face_mat[matname] << face
+        end
+      end
+      out = "// NFM Exporter for SketchUp release #{@release}\n"
+      out << "// Created on: #{Time.now}\n"
+      out << "// Model Title: #{model.title}\n"
+      out << "// Model Path: #{model.path}\n\n"
 
-    #  # Flip each vertex position on export to match NFM axes
-    #  tr = Geom::Transformation.rotation(ORIGIN, X_AXIS, 90.degrees)
+      # Flip each vertex position on export to match NFM axes
+      tr = Geom::Transformation.rotation(ORIGIN, X_AXIS, 90.degrees)
 
-    #  # 1st and 2nd Colors
-    #  first_color = second_color = nil
-    #  model.materials.each do |mat|
-    #    first_color = mat.color if mat.display_name[/1stcolor/i]
-    #    second_color = mat.color if mat.display_name[/2ndcolor/i]
-    #  end
-    #  if first_color
-    #    out << "1stColor(#{first_color.red},#{first_color.green},#{first_color.blue})\n"
-    #  end
-    #  if second_color
-    #    out << "2ndColor(#{second_color.red},#{second_color.green},#{second_color.blue})\n"
-    #  end
-    #  out << "\n"
+      # 1st and 2nd Colors
+      first_color = second_color = nil
+      model.materials.each do |mat|
+        first_color = mat.color if mat.display_name[/1stcolor/i]
+        second_color = mat.color if mat.display_name[/2ndcolor/i]
+      end
+      if first_color
+        out << "1stColor(#{first_color.red},#{first_color.green},#{first_color.blue})\n"
+      end
+      if second_color
+        out << "2ndColor(#{second_color.red},#{second_color.green},#{second_color.blue})\n"
+      end
+      out << "\n"
 
-    #  faces = entities.grep(Sketchup::Face)
-    #  if faces.size > 210
-    #    UI.messagebox("Model has #{faces.size} faces.")
-    #  end
-    #  #entities.grep(Sketchup::Face).each do |face|
-    #  face_mat.each do |part, faces|
-    #    faces.each do |face|
-    #      o_loop = face.outer_loop
-    #      verts = o_loop.vertices
-    #      out << '<p>' << "\n"
-    #      if mat = face.material
-    #        out << "// #{mat.display_name}\n"
-    #        matname = mat.display_name
-    #        out << 'c('
-    #        out << mat.color.red.to_s << ','
-    #        out << mat.color.green.to_s << ','
-    #        out << mat.color.blue.to_s
-    #        out << ')'
-    #        out << "\n"
-    #        if matname[/glass/i]
-    #          out << "glass()\n"
-    #        end
-    #        if matname[/lightf/i]
-    #          out << "lightF\n"
-    #        end
-    #        if matname[/lightb/i]
-    #          out << "lightB\n"
-    #        end
-    #        if matname[/flash/i]
-    #          #out << "// flash\n"
-    #          out << "gr(-18) // flash\n"
-    #        end
-    #        if matname[/glow/i]
-    #          #out << "// glow\n"
-    #          out << "gr(-10) //glow\n"
-    #        end
-    #      end
-    #      out << "\n"
-    #      verts.each do |vert|
-    #        pos = vert.position
-    #        pos.transform!(tr)
-    #        pos = pos.to_a.map{|e| e.round}
-    #        out << '  p(' << pos.join(',') << ')' 
-    #        out << "\n"
-    #      end
-    #      out << '</p>'
-    #      out << "\n\n"
-    #    end
-    #  end
+      faces = entities.grep(Sketchup::Face)
+      if faces.size > 210
+        UI.messagebox("Model has #{faces.size} faces.")
+      end
+      #entities.grep(Sketchup::Face).each do |face|
+      face_mat.each do |part, faces|
+        faces.each do |face|
+          o_loop = face.outer_loop
+          verts = o_loop.vertices
+          out << '<p>' << "\n"
+          if mat = face.material
+            out << "// #{mat.display_name}\n"
+            matname = mat.display_name
+            out << 'c('
+            out << mat.color.red.to_s << ','
+            out << mat.color.green.to_s << ','
+            out << mat.color.blue.to_s
+            out << ')'
+            out << "\n"
+            if matname[/glass/i]
+              out << "glass()\n"
+            end
+            if matname[/lightf/i]
+              out << "lightF\n"
+            end
+            if matname[/lightb/i]
+              out << "lightB\n"
+            end
+            if matname[/flash/i]
+              #out << "// flash\n"
+              out << "gr(-18) // flash\n"
+            end
+            if matname[/glow/i]
+              #out << "// glow\n"
+              out << "gr(-10) //glow\n"
+            end
+          end
+          out << "\n"
+          verts.each do |vert|
+            pos = vert.position
+            pos.transform!(tr)
+            pos = pos.to_a.map{|e| e.round}
+            out << '  p(' << pos.join(',') << ')' 
+            out << "\n"
+          end
+          out << '</p>'
+          out << "\n\n"
+        end
+      end
 
-    #  # Output default wheels, stats and physics
-    #  out << "// Default Wheels\ngwgr(0)\nrims(140,140,140,18,10)\n"
-    #  out << "w(-45,15,76,11,26,20)\nw(45,15,76,11,-26,20)\n"
-    #  out << "gwgr(0)\nrims(140,140,140,18,10)\n"
-    #  out << "w(-45,15,-76,0,26,20)\nw(45,15,-76,0,-26,20)\n"
-    #  out << "\nstat(128,98,102,109,123)\n"
-    #  out << "\nphysics(50,50,50,50,50,50,50,50,50,50,50,50,50,50,0,4753)\n"
+      # Output default wheels, stats and physics
+      out << "// Default Wheels\ngwgr(0)\nrims(140,140,140,18,10)\n"
+      out << "w(-45,15,76,11,26,20)\nw(45,15,76,11,-26,20)\n"
+      out << "gwgr(0)\nrims(140,140,140,18,10)\n"
+      out << "w(-45,15,-76,0,26,20)\nw(45,15,-76,0,-26,20)\n"
+      out << "\nstat(128,98,102,109,123)\n"
+      out << "\nphysics(50,50,50,50,50,50,50,50,50,50,50,50,50,50,0,4753)\n"
 
-    #  if @wd and @wd.visible?
-    #    @wd.close
-    #  end
+      if @wd and @wd.visible?
+        @wd.close
+      end
 
-    #  # Show car code in dialog
-    #  @wd = UI::WebDialog.new('NFM for SketchUp', false, 'JF\\NFM', 500, 500)
-    #  @wd.set_html  <<-EOS
-    #    <html>
-    #    <head>
-    #    <style>#area{height:90%;width:100%;}</style>
-    #    </head>
-    #    <body>
-    #    Select all, Copy.<br>
-    #    <a href="skp:refresh">Refresh</a> |
-    #    <a href="#" onclick="ta.focus();ta.select();">Select</a> 
-    #    <br>
-    #    <textarea id=area name=ta cols=40>#{out}</textarea>
-    #    </body></html>
-    #  EOS
-    #  @wd.add_action_callback('refresh') do |d, a|
-    #    JF::NFM.export
-    #  end
-    #  @wd.show
-    #end
+      # Show car code in dialog
+      @wd = UI::WebDialog.new('NFM for SketchUp', false, 'JF\\NFM', 500, 500)
+      @wd.set_html  <<-EOS
+        <html>
+        <head>
+        <style>#area{height:90%;width:100%;}</style>
+        </head>
+        <body>
+        Select all, Copy.<br>
+        <a href="skp:refresh">Refresh</a> |
+        <a href="#" onclick="ta.focus();ta.select();">Select</a> 
+        <br>
+        <textarea id=area name=ta cols=40>#{out}</textarea>
+        </body></html>
+      EOS
+      @wd.add_action_callback('refresh') do |d, a|
+        JF::NFM.export
+      end
+      @wd.show
+    end
 
     def self.export
       model    = Sketchup.active_model
       entities = model.active_entities
-      #faces    = entities.grep(Sketchup::Face)
-      ## Group Faces by Material
-      #face_mat = {}
-      #faces.each do |face|
-      #  if mat = face.material
-      #    matname = face.material.display_name
-      #    face_mat[matname] ||= []
-      #    face_mat[matname] << face
-      #  end
-      #end
       out = ''
       #out = "// NFM Exporter for SketchUp release #{@release}\n"
       #out << "// Created on: #{Time.now}\n"
@@ -207,7 +197,7 @@ module JF
           out << "\n"
         end
         out << '</p>'
-        out << "\n\n"
+        out << "\n"
       end
       #end
 
@@ -244,7 +234,7 @@ module JF
       @wd.show
     end # def export2
 
-    def self.do_color surface, out
+    def self.do_color(surface, out)
       face = surface[0]
       #out << "c(255,255,255)\n"
       if mat = face.material
@@ -383,94 +373,6 @@ module JF
       end
       surfaces
     end
-
-    def self.sort_verts
-      edges = surface_outer_edges(all_surfaces[1])
-      p edges.length
-      verts = []
-      edge0 = edges[0]
-      verts << edge0.start << edge0.end
-      get_left verts
-      get_right verts
-      p verts
-    end
-
-    def self.get_left(verts)
-      edges = verts[0].edges
-      return if edges.length != 2
-      nverts = edges.collect {|e| e.vertices}
-      nverts.flatten!
-      nverts.uniq!
-      v = nverts - verts
-      if v.length > 0 # and @allverts.include? v[0]
-        verts.unshift v[0]
-        #@selection.add edges if angleBetweenEdges(edges) < 89
-        get_left verts
-      end
-    end
-
-    def self.get_right(verts)
-      edges = verts[-1].edges
-      return if edges.length != 2
-      nverts = edges.collect {|e| e.vertices}
-      nverts.flatten!
-      nverts.uniq!
-      v = nverts - verts
-      if v.length > 0 # and @allverts.include? v[0]
-        #@selection.add edges if angleBetweenEdges(edges) < 89 
-        verts.push v[0]
-        get_right verts
-      end
-    end
-
-    def self.get_surface_border(surface)
-      #
-      border = []
-      edges  = []
-      verts  = []
-      #
-      t1 = Time.now.to_f
-      #
-      for f in surface.grep(Sketchup::Face)
-        for e in f.outer_loop.edges
-          edges << e if e.faces.length == 1
-        end
-      end
-      #
-      border << edges.pop
-      #
-      edges.length.times do |n|
-        for e in edges
-          border << edges.delete(e) if e.start == border.last.end
-        end
-      end
-      #
-      for e in border
-        verts << e.start unless verts.include?(e.start)
-        verts << e.end unless verts.include?(e.end)
-      end
-      #
-      t2 = Time.now.to_f
-      #
-      if @debug
-        if edges.empty?
-          puts("All Edges added to border")
-        else
-          puts("Edges left over: (#{edges.length})")
-          for e in edges
-            puts("#{e.inspect}")
-            puts("  start( #{e.start.position.x}, #{e.start.position.y}, #{e.start.position.z})")
-            puts("    end( #{e.end.position.x}, #{e.end.position.y}, #{e.end.position.z})")
-          end
-        end
-        #
-        puts("Elapsed Time in secs: #{t1 - t2}")
-      end
-      #
-      return verts
-      #
-    end # get_surface_border()
-
 
     # @param [Sketchup::Edge] edge1
     # @param [Sketchup::Edge] edge2
