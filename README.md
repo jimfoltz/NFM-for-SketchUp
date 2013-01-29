@@ -28,7 +28,7 @@ The NFM plugins is a single-file. In a nutshell, you just put the file in Sketch
 
 ## Creating a Model ##
 
-Download this [Sample SketchUp Model](http://sketchup.google.com/3dwarehouse/details?mid=d5387a815f8e5d17990657dd2813bf44) to get started.
+Download this [Sample SketchUp Model](http://sketchup.google.com/3dwarehouse/details?mid=196de521c5d5c3f0b73ce25f042b849a) to get started.
 
 Things to note:
 
