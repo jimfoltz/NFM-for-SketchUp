@@ -147,6 +147,7 @@ module JF
     def self.export
       model    = Sketchup.active_model
       entities = model.active_entities
+      tr = Geom::Transformation.rotation(ORIGIN, X_AXIS, 90.degrees)
       out = ''
       #out = "// NFM Exporter for SketchUp release #{@release}\n"
       #out << "// Created on: #{Time.now}\n"
@@ -154,41 +155,19 @@ module JF
       #out << "// Model Path: #{model.path}\n\n"
 
       # Flip each vertex position on export to match NFM axes
-      tr = Geom::Transformation.rotation(ORIGIN, X_AXIS, 90.degrees)
 
-      # 1st and 2nd Colors
-      #first_color = second_color = nil
-      #model.materials.each do |mat|
-      #  first_color = mat.color if mat.display_name[/1stcolor/i]
-      #  second_color = mat.color if mat.display_name[/2ndcolor/i]
-      #end
-      #if first_color
-      #  out << "1stColor(#{first_color.red},#{first_color.green},#{first_color.blue})\n"
-      #end
-      #if second_color
-      #  out << "2ndColor(#{second_color.red},#{second_color.green},#{second_color.blue})\n"
-      #end
       out << "\n"
 
       surfaces = all_surfaces
       if surfaces.size > 210
         UI.messagebox("Model has #{surfaces.size} surfaces.")
       end
-      #puts "surface count #{surfaces.size}"
-      #entities.grep(Sketchup::Face).each do |face|
-      #face_mat.each do |part, faces|
       surfaces.each do |surface|
         outer_edges = surface_outer_edges(surface)
         sorted_edges = sort_edges(outer_edges)
-        #puts "sorted_edges:#{sorted_edges.inspect}"
-        #model.selection.clear
-        #model.selection.add(outer_edges)
         sorted_verts = sort_vertices(sorted_edges)
-        #outer_edges.each{|e| verts.concat e.vertices}
-        #verts.uniq!
         out << '<p>' << "\n"
         do_color(surface, out)
-        #out << "fs(1)\n"
         sorted_verts.each do |vert|
           pos = vert.position
           pos.transform!(tr)
@@ -199,7 +178,6 @@ module JF
         out << '</p>'
         out << "\n"
       end
-      #end
 
       # Output default wheels, stats and physics
       #out << "// Default Wheels\ngwgr(0)\nrims(140,140,140,18,10)\n"
@@ -238,13 +216,14 @@ module JF
       face = surface[0]
       #out << "c(255,255,255)\n"
       if mat = face.material
-        out << "// #{mat.display_name}\n"
+        color = mat.color
         matname = mat.display_name
-        out << 'c('
-        out << mat.color.red.to_s << ','
-        out << mat.color.green.to_s << ','
-        out << mat.color.blue.to_s
-        out << ')'
+      else
+        color = Sketchup.active_model.rendering_options['FaceFrontColor']
+        matname = 'Default Color'
+      end
+        out << "// #{matname}\n"
+        out << "c(#{color.red},#{color.green},#{color.blue})"
         out << "\n"
         if matname[/glass/i]
           out << "glass()\n"
@@ -263,7 +242,6 @@ module JF
           #out << "// glow\n"
           out << "gr(-10) //glow\n"
         end
-      end
       out << "\n"
     end
 
@@ -288,9 +266,7 @@ module JF
         if line[/<\/p>/]
           in_p = false
           if not polygon.empty?
-            #p polygon
             mesh.add_polygon(polygon)
-            #Sketchup.active_model.entities.add_face(polygon)
             Sketchup.active_model.entities.add_faces_from_mesh(mesh, 0)
           end
           next
@@ -367,7 +343,7 @@ module JF
       #all_faces = model.entities.grep(Sketchup::Face)
       surfaces = []
       while(all_faces.size > 0)
-        surface = adjacent_faces(all_faces[0])
+        surface = surface_from_face(all_faces[0])
         surfaces << surface
         all_faces = all_faces - surface
       end
