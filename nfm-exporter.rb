@@ -99,6 +99,9 @@ module JF
             end
           end
           out << "\n"
+          while verts[0] == verts[-1]
+            verts.pop
+          end
           verts.each do |vert|
             pos = vert.position
             pos.transform!(tr)
@@ -163,11 +166,25 @@ module JF
         UI.messagebox("Model has #{surfaces.size} surfaces.")
       end
       surfaces.each do |surface|
+        if surface.length < 1
+          model.selection.clear
+          model.selection.add surface
+          fail surface.inspect
+        end
         outer_edges = surface_outer_edges(surface)
         sorted_edges = sort_edges(outer_edges)
-        sorted_verts = sort_vertices(sorted_edges)
+        begin
+          sorted_verts = sort_vertices(sorted_edges)
+        rescue
+          model.selection.clear
+          model.selection.add(outer_edges)
+          raise
+        end
         out << '<p>' << "\n"
         do_color(surface, out)
+        while sorted_verts[0] == sorted_verts[-1]
+        sorted_verts.pop
+        end
         sorted_verts.each do |vert|
           pos = vert.position
           pos.transform!(tr)
@@ -176,6 +193,7 @@ module JF
           out << "\n"
         end
         out << '</p>'
+        out << "\n"
         out << "\n"
       end
 
