@@ -11,7 +11,7 @@ This SketchUp plugin is meant to help creating vehicles.
 The NFM plugins is a single-file. In a nutshell, you just put the file in SketchUps' Plugins folder.
 
 * Step 1 -
-    Download the [nfm-exporter.rb](https://raw.github.com/jimfoltz/NFM-for-SketchUp/master/nfm-exporter.rb) file. (Right-click link, select the *Save  As* option.)
+    Download the [nfm-exporter.rb](https://raw.github.com/jimfoltz/NFM-for-SketchUp/master/nfm-exporter.rb) file. (Right-click link, select the *Save  As* option.
 
 * Step 2 - Move or copy the `nfm-exporter.rb` file to your SketchUp/Plugins folder.
 
@@ -30,12 +30,12 @@ The NFM plugins is a single-file. In a nutshell, you just put the file in Sketch
 
 Download this [Sample SketchUp Model](http://sketchup.google.com/3dwarehouse/details?mid=196de521c5d5c3f0b73ce25f042b849a) to get started.
 
-Things to note:
+### Things to note: ###
 
 * The car code is generated strictly from Faces - other SketchUp entities such as Groups and Components may be in the model, but are ignored.
 * The car is centered (more or less) on the origin.
 * The size of the car is appropriate for the default wheels.
-* The stats and physics of the car are included for covenience. There is no way to edit these from SketchUp. I pasted them from another car file.
+* The stats and physics of the car are not included.
 * Pay special attention to the names of the Materials in SketchUp - they control things like default colors, headlights, brakelights, glow, and flash. The following special names are supported as SketchUp Material names:
  * 1stColor
  * 2ndColor
@@ -53,4 +53,6 @@ Multiple special names can be used for any material, separated by a space.
 menu item.
 * Copy and paste the code into the NFM Car Maker code editor.
 * Press Save & Preview
+
+If a surface is selected, only the selected surface is displayed in the dialog. 
 
