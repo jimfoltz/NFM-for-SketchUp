@@ -210,7 +210,7 @@ module JF
       end
 
       # Show car code in dialog
-      @wd = UI::WebDialog.new('NFM for SketchUp', false, 'JF\\NFM', 500, 500)
+      @wd = UI::WebDialog.new('NFM for SketchUp', false, 'JF\\NFM', 350, 500)
       @wd.set_html  <<-EOS
         <html>
         <head>
