@@ -207,7 +207,7 @@ module JF
       faces_found << face if faces_found.empty?
       edges = face.edges
       edges.each do |edge|
-        if edge.soft?
+        if edge.soft? and edge.smooth?
           faces_to_add = edge.faces - faces_found
           faces_found.concat(faces_to_add)
           faces_to_add.each{|f| adjacent_faces(f, faces_found)}
@@ -223,8 +223,6 @@ module JF
       else
         all_faces = model.selection.grep(Sketchup::Face)
       end
-      #model.selection.clear
-      #all_faces = model.entities.grep(Sketchup::Face)
       surfaces = []
       while(all_faces.size > 0)
         surface = surface_from_face(all_faces[0])
