@@ -32,11 +32,13 @@ module JF
       # Flip each vertex position on export to match NFM axes
       @tr = Geom::Transformation.rotation(ORIGIN, X_AXIS, 90.degrees)
       out = ''
-      if (((edges = sel.grep(Sketchup::Edge)).length) == sel.length) and sel.length > 0
+      if sel.length > 0
+        edges = sel.grep(Sketchup::Edge)
+        if (edges.length == sel.length)
           export_selected_edges(edges, out)
-      else
-        export(out)
+        end
       end
+      export(out)
       dialog(out)
     end
 
