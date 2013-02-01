@@ -26,64 +26,21 @@ module JF
     @release = '2013a'
     @model = Sketchup.active_model
 
-    def self.export
-      model    = Sketchup.active_model
-      entities = model.active_entities
-      tr = Geom::Transformation.rotation(ORIGIN, X_AXIS, 90.degrees)
-      out = ''
-      #out = "// NFM Exporter for SketchUp release #{@release}\n"
-      #out << "// Created on: #{Time.now}\n"
-      #out << "// Model Title: #{model.title}\n"
-      #out << "// Model Path: #{model.path}\n\n"
-
+    def self.main
+      model = Sketchup.active_model
+      sel = model.selection
       # Flip each vertex position on export to match NFM axes
-
-      out << "\n"
-
-      surfaces = all_surfaces
-      if surfaces.size > 210
-        UI.messagebox("Model has #{surfaces.size} surfaces.")
+      @tr = Geom::Transformation.rotation(ORIGIN, X_AXIS, 90.degrees)
+      out = ''
+      if (((edges = sel.grep(Sketchup::Edge)).length) == sel.length) and sel.length > 0
+          export_selected_edges(edges, out)
+      else
+        export(out)
       end
-      surfaces.each do |surface|
-        if surface.length < 1
-          model.selection.clear
-          model.selection.add surface
-          fail surface.inspect
-        end
-        outer_edges = surface_outer_edges(surface)
-        sorted_edges = sort_edges(outer_edges)
-        begin
-          sorted_verts = sort_vertices(sorted_edges)
-        rescue
-          model.selection.clear
-          model.selection.add(outer_edges)
-          raise
-        end
-        out << '<p>' << "\n"
-        do_color(surface, out)
-        while sorted_verts[0] == sorted_verts[-1]
-        sorted_verts.pop
-        end
-        sorted_verts.each do |vert|
-          pos = vert.position
-          pos.transform!(tr)
-          pos = pos.to_a.map{|e| e.round}
-          out << 'p(' << pos.join(',') << ')' 
-          out << "\n"
-        end
-        out << '</p>'
-        out << "\n"
-        out << "\n"
-      end
+      dialog(out)
+    end
 
-      # Output default wheels, stats and physics
-      #out << "// Default Wheels\ngwgr(0)\nrims(140,140,140,18,10)\n"
-      #out << "w(-45,15,76,11,26,20)\nw(45,15,76,11,-26,20)\n"
-      #out << "gwgr(0)\nrims(140,140,140,18,10)\n"
-      #out << "w(-45,15,-76,0,26,20)\nw(45,15,-76,0,-26,20)\n"
-      #out << "\nstat(128,98,102,109,123)\n"
-      #out << "\nphysics(50,50,50,50,50,50,50,50,50,50,50,50,50,50,0,4753)\n"
-
+    def self.dialog(out)
       if @wd and @wd.visible?
         @wd.close
       end
@@ -101,13 +58,75 @@ module JF
         <a href="#" onclick="ta.focus();ta.select();">Select</a> 
         <br>
         <textarea id=area name=ta cols=40>#{out}</textarea>
-        </body></html>
+        </body>
+        <script>ta.focus(); ta.select();r=ta.createTextRange();r.execCommand('copy');</script>
+        </html>
       EOS
       @wd.add_action_callback('refresh') do |d, a|
-        JF::NFM.export
+        JF::NFM.main
       end
       @wd.show
+    end
+
+    def self.export(out)
+      model    = Sketchup.active_model
+      entities = model.active_entities
+      surfaces = all_surfaces
+      if surfaces.size > 210
+        UI.messagebox("Model has #{surfaces.size} surfaces.")
+      end
+      surfaces.each do |surface|
+        if surface.length < 1
+          model.selection.clear
+          model.selection.add surface
+          fail surface.inspect
+        end
+        outer_edges = surface_outer_edges(surface)
+        model.selection.clear
+        model.selection.toggle(outer_edges)
+        sorted_edges = sort_edges(outer_edges)
+        begin
+          sorted_verts = sort_vertices(sorted_edges)
+        rescue
+          model.selection.clear
+          model.selection.add(outer_edges)
+          raise
+        end
+        out << '<p>' << "\n"
+        do_color(surface, out)
+        export_vertices(sorted_verts, out)
+        out << '</p>'
+        out << "\n"
+        out << "\n"
+      end # surfaces.each 
+
+      # Output default wheels, stats and physics
+      #out << "// Default Wheels\ngwgr(0)\nrims(140,140,140,18,10)\n"
+      #out << "w(-45,15,76,11,26,20)\nw(45,15,76,11,-26,20)\n"
+      #out << "gwgr(0)\nrims(140,140,140,18,10)\n"
+      #out << "w(-45,15,-76,0,26,20)\nw(45,15,-76,0,-26,20)\n"
+      #out << "\nstat(128,98,102,109,123)\n"
+      #out << "\nphysics(50,50,50,50,50,50,50,50,50,50,50,50,50,50,0,4753)\n"
+
     end # def export2
+
+    def self.export_selected_edges(edges, out)
+      sorted_edges = sort_edges(edges)
+      sorted_verts = sort_vertices(sorted_edges)
+      out << "<p>\n"
+      export_vertices(sorted_verts, out)
+      out << "</p>\n\n"
+    end
+
+    def self.export_vertices(verts, out)
+        verts.each do |vert|
+          pos = vert.position
+          pos.transform!(@tr)
+          pos = pos.to_a.map{|e| e.round}
+          out << 'p(' << pos.join(',') << ')' 
+          out << "\n"
+        end
+    end
 
     def self.do_color(surface, out)
       face = surface[0]
@@ -119,26 +138,26 @@ module JF
         color = Sketchup.active_model.rendering_options['FaceFrontColor']
         matname = 'Default Color'
       end
-        out << "// #{matname}\n"
-        out << "c(#{color.red},#{color.green},#{color.blue})"
-        out << "\n"
-        if matname[/glass/i]
-          out << "glass()\n"
-        end
-        if matname[/lightf/i]
-          out << "lightF\n"
-        end
-        if matname[/lightb/i]
-          out << "lightB\n"
-        end
-        if matname[/flash/i]
-          #out << "// flash\n"
-          out << "gr(-18) // flash\n"
-        end
-        if matname[/glow/i]
-          #out << "// glow\n"
-          out << "gr(-10) //glow\n"
-        end
+      out << "// #{matname}\n"
+      out << "c(#{color.red},#{color.green},#{color.blue})"
+      out << "\n"
+      if matname[/glass/i]
+        out << "glass()\n"
+      end
+      if matname[/lightf/i]
+        out << "lightF\n"
+      end
+      if matname[/lightb/i]
+        out << "lightB\n"
+      end
+      if matname[/flash/i]
+        #out << "// flash\n"
+        out << "gr(-18) // flash\n"
+      end
+      if matname[/glow/i]
+        #out << "// glow\n"
+        out << "gr(-10) //glow\n"
+      end
       out << "\n"
     end
 
@@ -190,7 +209,7 @@ module JF
     def self.surface_outer_edges(surface)
       visible_edges = []
       surface.each do |face|
-        face.edges.each do |edge|
+        face.outer_loop.edges.each do |edge|
           if not edge.soft?
             visible_edges << edge
           end
@@ -354,6 +373,8 @@ module JF
       curve.each { |edge|
         vertices << edge.other_vertex(vertices.last) # (?) Errorcheck?
       }
+      # Unappend duplicate vert
+      vertices.pop
       return vertices
     end
 
@@ -363,6 +384,8 @@ module JF
       surface = surface_from_face(face)
       model.selection.clear
       outer_edges = surface_outer_edges(surface)
+      model.selection.add(outer_edges)
+      return
       sorted_edges = TT::Edges.sort(outer_edges)
       model.selection.add(sorted_edges)
       #border_verts = get_surface_border(surface)
@@ -371,7 +394,7 @@ module JF
     end
 
     menu = UI.menu('Plugins').add_submenu('Need For Madness')
-    menu.add_item('Show Code') { NFM.export }
+    menu.add_item('Show Code') { NFM.main }
     menu.add_item('NFM Import') { NFM.import } 
     #menu.add_item('NFM Surface Test') { NFM.surface_test } 
 
