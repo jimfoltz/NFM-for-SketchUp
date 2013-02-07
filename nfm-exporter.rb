@@ -178,6 +178,14 @@ module JF
     end
 
     def self.import(lines)
+      model = Sketchup.active_model
+      model.start_operation("NFM Import from Dialog", true)
+      if model.active_entities.length > 0
+        grp = model.active_entities.add_group
+        ents = grp.entities
+      else
+        ents = model.active_entities
+      end
       tr = Geom::Transformation.rotation(ORIGIN, X_AXIS, -90.degrees)
       #p file
       in_p = false
@@ -198,7 +206,7 @@ module JF
           in_p = false
           if not polygon.empty?
             mesh.add_polygon(polygon)
-            Sketchup.active_model.entities.add_faces_from_mesh(mesh, 0)
+            ents.add_faces_from_mesh(mesh, 0)
           end
           next
         end
@@ -216,9 +224,11 @@ module JF
       #p mesh.count_polygons
       #Sketchup.active_model.entities.add_faces_from_mesh(mesh, 0)
       tr = Geom::Transformation.rotation(ORIGIN, X_AXIS, -90.degrees)
-      entities = Sketchup.active_model.entities
-      entities.transform_entities(tr, entities.to_a)
+      #entities = Sketchup.active_model.entities
+      ents.transform_entities(tr, ents.to_a)
       Sketchup.active_model.active_view.zoom_extents
+      ents[0].parent.invalidate_bounds
+      model.commit_operation
     end
 
     def self.surface_outer_edges(surface)
