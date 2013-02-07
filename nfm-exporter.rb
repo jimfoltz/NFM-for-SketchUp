@@ -110,7 +110,7 @@ module JF
       #out << "\nstat(128,98,102,109,123)\n"
       #out << "\nphysics(50,50,50,50,50,50,50,50,50,50,50,50,50,50,0,4753)\n"
 
-    end # def export2
+    end # def export
 
     def self.export_selected_edges(edges, out)
       sorted_edges = sort_edges(edges)
@@ -121,6 +121,8 @@ module JF
     end
 
     def self.export_vertices(verts, out)
+      # Try rotate verts to fix concave surfaces in nfm
+      #10.times {verts.push(verts.pop)}
         verts.each do |vert|
           pos = vert.position
           pos.transform!(@tr)
@@ -163,15 +165,26 @@ module JF
       out << "\n"
     end
 
-    def self.import
-      tr = Geom::Transformation.rotation(ORIGIN, X_AXIS, -90.degrees)
+    def self.dialog_import
+      lines = @wd.get_element_value('area').split("\n")
+      import(lines)
+    end
+
+    def self.file_import
       file = UI.openpanel
-      #file = File.dirname(__FILE__) + '/Simple Car.rad'
+      lines = IO.readlines(file)
+      dialog(lines)
+      import(lines)
+    end
+
+    def self.import(lines)
+      tr = Geom::Transformation.rotation(ORIGIN, X_AXIS, -90.degrees)
       #p file
       in_p = false
       mesh = Geom::PolygonMesh.new
       polygon = []
-      IO.foreach(file) do |line|
+      #IO.foreach(file) do |line|
+      lines.each do |line|
         #p line
         line.strip!
         next if line.empty?
@@ -397,7 +410,8 @@ module JF
 
     menu = UI.menu('Plugins').add_submenu('Need For Madness')
     menu.add_item('Show Code') { NFM.main }
-    menu.add_item('NFM Import') { NFM.import } 
+    menu.add_item('NFM Dialog Import') { NFM.dialog_import } 
+    menu.add_item('NFM File Import') { NFM.file_import } 
     #menu.add_item('NFM Surface Test') { NFM.surface_test } 
 
   end # module NFM
