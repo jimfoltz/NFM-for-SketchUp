@@ -52,13 +52,17 @@ module JF
       @wd.set_html  <<-EOS
         <html>
         <head>
-        <style>#area{height:90%;width:100%;}</style>
+        <style>
+        .menu {font: menu;}
+        #area{height:90%;width:100%;}</style>
         </head>
         <body>
         Select all, Copy.<br>
+        <div class=menu>
         <a href="skp:refresh">Refresh</a> |
-        <a href="#" onclick="ta.focus();ta.select();">Select</a> 
-        <br>
+        <a href="#" onclick="ta.focus();ta.select();">Select</a> |
+        <a href="skp:import">Import</a>
+        </div>
         <textarea id=area name=ta cols=40>#{out}</textarea>
         </body>
         <script>ta.focus(); ta.select();r=ta.createTextRange();r.execCommand('copy');</script>
@@ -66,6 +70,9 @@ module JF
       EOS
       @wd.add_action_callback('refresh') do |d, a|
         JF::NFM.main
+      end
+      @wd.add_action_callback('import') do |d, a|
+        JF::NFM.dialog_import
       end
       @wd.show
     end
@@ -227,7 +234,10 @@ module JF
       #entities = Sketchup.active_model.entities
       ents.transform_entities(tr, ents.to_a)
       Sketchup.active_model.active_view.zoom_extents
-      ents[0].parent.invalidate_bounds
+      p ents[0].parent
+      if ents[0].parent.is_a?(Sketchup::ComponentDefinition)
+        ents[0].parent.invalidate_bounds
+      end
       model.commit_operation
     end
 
