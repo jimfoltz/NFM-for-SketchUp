@@ -84,6 +84,7 @@ module JF
       if surfaces.size > 210
         UI.messagebox("Model has #{surfaces.size} surfaces.")
       end
+      model.selection.clear
       surfaces.each do |surface|
         if surface.length < 1
           model.selection.clear
@@ -91,8 +92,7 @@ module JF
           fail surface.inspect
         end
         outer_edges = surface_outer_edges(surface)
-        model.selection.clear
-        model.selection.toggle(outer_edges)
+        model.selection.add(outer_edges)
         sorted_edges = sort_edges(outer_edges)
         begin
           sorted_verts = sort_vertices(sorted_edges)
@@ -299,7 +299,6 @@ module JF
       end
       nil
     end
-
     # Sorts the given set of edges from start to end. If the edges form a loop
     # an arbitrary start is picked.
     #
@@ -413,6 +412,30 @@ module JF
       return vertices
     end
 
+    def self.round_vertices
+      model = Sketchup.active_model
+      all_verts = {}
+      vecs = []
+      edges = model.entities.grep(Sketchup::Edge)
+      edges.each do |edge|
+        edge.vertices.each do |vertex|
+          if not all_verts.include?(vertex)
+            all_verts[vertex] = vertex.position
+          end
+        end
+      end
+      verts = []
+      # build vecs
+      all_verts.each do |vert, pos|
+        verts << vert
+        rvert = [pos.x.round, pos.y.round, pos.z.round]
+        vecs << (pos.vector_to(rvert))
+      end
+      warn "mis-matched verts/vecs" unless verts.length == vecs.length
+      entities.transform_by_vectors(verts, vecs)
+      model.active_view.refresh
+    end
+
     def self.surface_test
       model = Sketchup.active_model
       face = model.selection[0]
@@ -433,6 +456,7 @@ module JF
     menu.add_item('NFM Dialog Import') { NFM.dialog_import } 
     menu.add_item('NFM File Import') { NFM.file_import } 
     #menu.add_item('NFM Surface Test') { NFM.surface_test } 
+    menu.add_item('NFM Round Verts') { NFM.round_vertices } 
 
   end # module NFM
 end # module JF
