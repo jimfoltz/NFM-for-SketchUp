@@ -1,10 +1,9 @@
 NFM-for-SketchUp
 ================
 
-[Need for Madness](http://www.needformadness.com/developer/) is a fun, fast-paced car game written in Java. You can create and customize vehicles for the game.
+[Need for Madness](http://www.needformadness.com/developer/) is a fun, fast-paced car game written in Java. This SketchUp plugin helps creating vehicles for the game.
 
-This SketchUp plugin is meant to help creating vehicles.
-
+Latest Version: **0.5**
 
 ## Plugin Installation ##
 
@@ -56,5 +55,5 @@ menu item.
 * Copy and paste the code into the NFM Car Maker code editor.
 * Press Save & Preview
 
-If a surface is selected, only the selected surface is displayed in the dialog. Otherwise, the plugin tries to generate the polys <p> for every surface in the model.
+If a surface is selected, only the selected surface is displayed in the dialog. Otherwise, the plugin tries to generate the polys for every surface in the model.
 

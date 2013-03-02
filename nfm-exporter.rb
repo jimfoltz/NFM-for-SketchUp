@@ -23,7 +23,7 @@ require 'sketchup'
 
 module JF
   module NFM
-    @version = File.read('version')
+    @version = '0.5'
     @model = Sketchup.active_model
 
     def self.main
