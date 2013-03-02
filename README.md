@@ -19,7 +19,9 @@ The NFM plugins is a single-file. In a nutshell, you just put the file in Sketch
 
         `C:\Program Files(x86)\Google\Google SketchUp 8\Plugins\`
 
-    and on OSX:
+    (You will need Admin priviledges)    
+    
+	and on OSX:
 
         `/Library/Application Support/Google SketchUp 8/SketchUp/Plugins/`
 

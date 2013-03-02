@@ -23,7 +23,7 @@ require 'sketchup'
 
 module JF
   module NFM
-    @release = '2013a'
+    @version = File.read('version')
     @model = Sketchup.active_model
 
     def self.main
@@ -48,7 +48,7 @@ module JF
       end
 
       # Show car code in dialog
-      @wd = UI::WebDialog.new('NFM for SketchUp', false, 'JF\\NFM', 350, 500)
+      @wd = UI::WebDialog.new("NFM for SketchUp version #{@version}", false, 'JF\\NFM', 350, 500)
       @wd.set_html  <<-EOS
         <html>
         <head>
@@ -432,7 +432,7 @@ module JF
         vecs << (pos.vector_to(rvert))
       end
       warn "mis-matched verts/vecs" unless verts.length == vecs.length
-      entities.transform_by_vectors(verts, vecs)
+      model.entities.transform_by_vectors(verts, vecs)
       model.active_view.refresh
     end
 
