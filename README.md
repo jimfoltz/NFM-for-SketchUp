@@ -45,7 +45,7 @@ Download this [Sample SketchUp Model](http://sketchup.google.com/3dwarehouse/det
  * lightF
  * lightB
 
-Multiple special names can be used for any material, separated by a space.
+Multiple special names can be used for any material, separated by spaces.
 
 ## Exporting Car Codes ##
 
@@ -54,5 +54,5 @@ menu item.
 * Copy and paste the code into the NFM Car Maker code editor.
 * Press Save & Preview
 
-If a surface is selected, only the selected surface is displayed in the dialog. 
+If a surface is selected, only the selected surface is displayed in the dialog. Otherwise, the plugin tries to generate the polys <p> for every surface in the model.
 
