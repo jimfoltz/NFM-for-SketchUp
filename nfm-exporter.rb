@@ -23,7 +23,7 @@ require 'sketchup'
 
 module JF
   module NFM
-    @version = '0.5.1'
+    @version = '0.5.2'
     @model = Sketchup.active_model
     @lvl = 0
     DEBUG = false
@@ -480,7 +480,7 @@ module JF
 
     menu = UI.menu('Plugins').add_submenu('Need For Madness')
     menu.add_item('Show Code') { NFM.main }
-    menu.add_item('NFM Dialog Import') { NFM.dialog_import } 
+    #menu.add_item('NFM Dialog Import') { NFM.dialog_import } 
     menu.add_item('NFM File Import') { NFM.file_import } 
     #menu.add_item('NFM Surface Test') { NFM.surface_test } 
     if DEBUG
