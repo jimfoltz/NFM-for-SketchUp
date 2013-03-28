@@ -3,7 +3,7 @@ NFM-for-SketchUp
 
 [Need for Madness](http://www.needformadness.com/developer/) is a fun, fast-paced car game written in Java. This SketchUp plugin helps creating vehicles for the game.
 
-Latest Version: **0.5**
+Latest Version: **0.5.2**
 
 ## Plugin Installation ##
 
