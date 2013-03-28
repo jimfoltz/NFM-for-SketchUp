@@ -25,8 +25,25 @@ module JF
   module NFM
     @version = '0.5'
     @model = Sketchup.active_model
+    @lvl = 0
+    DEBUG = true
+
+    if DEBUG
+      LOG_FILE = "#{ENV['APPDATA']}/JimFoltz/SketchUp/NFM/log.txt"
+      if not File.exists?("#{ENV['APPDATA']}/JimFoltz/SketchUp/NFM")
+        Dir.mkdir("#{ENV['APPDATA']}/JimFoltz/SketchUp/NFM")
+      end
+      File.open("#{LOG_FILE}", "w") {|f| f.puts(Time.now)}
+    end
+
+    def self.log(s)
+      if DEBUG
+        File.open("#{LOG_FILE}", "a") {|f| f.puts(s)}
+      end
+    end
 
     def self.main
+      log "in main"
       model = Sketchup.active_model
       sel = model.selection
       # Flip each vertex position on export to match NFM axes
@@ -43,6 +60,7 @@ module JF
     end
 
     def self.dialog(out)
+      log "in dialog"
       if @wd and @wd.visible?
         @wd.close
       end
@@ -78,8 +96,10 @@ module JF
     end
 
     def self.export(out)
+      log "in export" 
       model    = Sketchup.active_model
       entities = model.active_entities
+      log "all_surfaces"
       surfaces = all_surfaces
       if surfaces.size > 210
         UI.messagebox("Model has #{surfaces.size} surfaces.")
@@ -140,6 +160,7 @@ module JF
     end
 
     def self.do_color(surface, out)
+
       face = surface[0]
       #out << "c(255,255,255)\n"
       if mat = face.material
@@ -254,10 +275,14 @@ module JF
     end
 
     def self.surface_from_face(face)
+      log "in surface_from_face"
       surface = adjacent_faces(face)
     end
 
     def self.adjacent_faces(face, faces_found = [])
+      log "in adjacent_faces"
+      @lvl += 1
+      log "level #{@lvl}"
       faces_found << face if faces_found.empty?
       edges = face.edges
       edges.each do |edge|
@@ -271,6 +296,7 @@ module JF
     end
 
     def self.all_surfaces
+      log "in all_surfaces"
       model = Sketchup.active_model
       if model.selection.length == 0
         all_faces = model.entities.grep(Sketchup::Face)
@@ -283,6 +309,7 @@ module JF
         surfaces << surface
         all_faces = all_faces - surface
       end
+      log "out all_surfaces"
       surfaces
     end
 
@@ -457,6 +484,9 @@ module JF
     menu.add_item('NFM File Import') { NFM.file_import } 
     #menu.add_item('NFM Surface Test') { NFM.surface_test } 
     menu.add_item('NFM Round Verts') { NFM.round_vertices } 
+    if DEBUG
+      menu.add_item("View Log") { UI.openURL(LOG_FILE) }
+    end
 
   end # module NFM
 end # module JF
