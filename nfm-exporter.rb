@@ -23,7 +23,7 @@ require 'sketchup'
 
 module JF
   module NFM
-    @version = '0.5'
+    @version = '0.5.1'
     @model = Sketchup.active_model
     @lvl = 0
     DEBUG = true
@@ -483,8 +483,9 @@ module JF
     menu.add_item('NFM Dialog Import') { NFM.dialog_import } 
     menu.add_item('NFM File Import') { NFM.file_import } 
     #menu.add_item('NFM Surface Test') { NFM.surface_test } 
-    menu.add_item('NFM Round Verts') { NFM.round_vertices } 
     if DEBUG
+      menu.add_separator
+      menu.add_item('NFM Round Verts') { NFM.round_vertices } 
       menu.add_item("View Log") { UI.openURL(LOG_FILE) }
     end
 
