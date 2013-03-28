@@ -26,7 +26,7 @@ module JF
     @version = '0.5.1'
     @model = Sketchup.active_model
     @lvl = 0
-    DEBUG = true
+    DEBUG = false
 
     if DEBUG
       LOG_FILE = "#{ENV['APPDATA']}/JimFoltz/SketchUp/NFM/log.txt"
